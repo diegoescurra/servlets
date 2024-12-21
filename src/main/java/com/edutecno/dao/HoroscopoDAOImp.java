@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HoroscopoDAOImp {
+public class HoroscopoDAOImp implements HoroscopoDAO{
 
     private Connection conexion;
 
@@ -24,7 +24,8 @@ public class HoroscopoDAOImp {
     }
 
 
-    public List<Horoscopo> listarTodos() {
+    @Override
+    public List<Horoscopo> obtenerHoroscopo() {
         List<Horoscopo> lista = new ArrayList<>();
         String sql = "SELECT * FROM horoscopo;";
         try (PreparedStatement ps = conexion.prepareStatement(sql);
@@ -46,5 +47,8 @@ public class HoroscopoDAOImp {
     public void cerrarConexion() {
         generaConexion.closeConnection(conexion);
     }
+
+
+
 
 }

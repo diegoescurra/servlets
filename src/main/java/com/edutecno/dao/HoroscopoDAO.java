@@ -6,16 +6,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HoroscopoDAO {
+public interface HoroscopoDAO {
 
-    HoroscopoDAOImp hdaoimp = new HoroscopoDAOImp();
-
-    List<Horoscopo> listaHoroscopos = hdaoimp.listarTodos();
-
-
-    public List<Horoscopo> listarHoroscopo() {
-
-        return listaHoroscopos;
-    }
+    List<Horoscopo> obtenerHoroscopo();
 
 }

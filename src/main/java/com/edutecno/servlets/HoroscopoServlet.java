@@ -4,6 +4,7 @@ package com.edutecno.servlets;
 import com.edutecno.dao.HoroscopoDAO;
 import com.edutecno.dao.HoroscopoDAOImp;
 import com.edutecno.modelo.Horoscopo;
+import com.edutecno.modelo.Usuario;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -11,21 +12,29 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet("/horoscopoServlet")
+@WebServlet("/consulta")
 public class HoroscopoServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HoroscopoDAO horoscopoDAO = new HoroscopoDAO();
-        HoroscopoDAOImp hDAOImp = new HoroscopoDAOImp();
-        try {
-            List<Horoscopo> listaHoroscopos = horoscopoDAO.listarHoroscopo();
-            request.setAttribute("listaHoroscopos", listaHoroscopos);
-            request.getRequestDispatcher("horoscopo.jsp").forward(request, response);
-        } catch (Exception e) {
-            e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error al procesar la solicitud.");
-        } finally {
-            hDAOImp.cerrarConexion();
+
+        Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+        HoroscopoDAO horoscopoDAO = new HoroscopoDAOImp();
+        List<Horoscopo> listaHoroscopo = horoscopoDAO.obtenerHoroscopo();
+
+        Horoscopo signo = null;
+        for (Horoscopo h : listaHoroscopo) {
+            if (usuario.getFechaNacimiento().after(h.getFechaInicio()) &&
+                    usuario.getFechaNacimiento().before(h.getFechaFin())) {
+                signo = h;
+                break;
+            }
         }
+
+        usuario.setAnimal(signo != null ? signo.getAnimal() : "Desconocido");
+        request.setAttribute("signo", usuario.getAnimal());
+
+
+        System.out.println(signo);
+        request.getRequestDispatcher("consulta.jsp").forward(request, response);
     }
 }
